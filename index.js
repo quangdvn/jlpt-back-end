@@ -28,7 +28,7 @@ app.use('/api/questions', questions);
 app.use('/api/answers', answers);
 
 databaseConnection();
-const port = process.env.PORT || 5005;
+const port = process.env.PORT || 8888;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
 
 
