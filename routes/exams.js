@@ -9,6 +9,10 @@ const { Part } = require('../models/part');
 const { Skill } = require('../models/skill');
 const countMondai = require('../utils/countMondai');
 
+//* to store current exam questions data
+let curQuestionList = [];
+
+//* Get all exam data
 router.get('/', async (req, res) => {
   try {
     const exams = await Exam.find();
@@ -18,6 +22,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+//* Get exam sentences by skill
 router.get('/:id/:skillID', async (req, res) => {
   try {
     const { id, skillID } = req.params;
@@ -49,6 +54,9 @@ router.get('/:id/:skillID', async (req, res) => {
       .sort('questionOrder');
     const questionList = questions.map(item => item.questionOrder);
 
+    //* Temporary store questions list into a carbon copy
+    curQuestionList = [...curQuestionList, ...questionList];
+
     //* Get all Answers included
     const answers = await Answer.find({ question: questionList })
       .select('-_id -__v -isTrue -avatar')
@@ -67,49 +75,15 @@ router.get('/:id/:skillID', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+//* Get sentences answers
+router.get('/answers', async (req, res) => {
   try {
-    const { id } = req.params;
-    //* Get current Exam
-    const exam = await Exam.findOne({ examNumber: id }).select('-_id');
-
-    //* Get given skills and parts included
-    const skills = await Skill.find({})
-      .select('-_id -__v')
-      .sort('skillOrder');
-    const parts = await Part.find({})
-      .select('-_id -__v')
-      .sort('partOrder');
-    //* Get given mondai included
-    const mondaiList = countMondai(id);
-    const mondai = await Mondai.find({ mondaiOrder: mondaiList })
-      .select('-_id -__v -skill -part')
-      .sort('mondaiOrder');
-
-    //* Get all Sentences included
-    const sentences = await Sentence.find({ exam: id })
-      .select('-exam -_id -__v')
-      .sort('sentenceOrder');
-    const sentenceList = sentences.map(item => item.sentenceOrder);
-
-    //* Get all Questions included
-    const questions = await Question.find({ sentence: sentenceList })
-      .select('-_id -__v')
-      .sort('questionOrder');
-    const questionList = questions.map(item => item.questionOrder);
-
     //* Get all Answers included
-    const answers = await Answer.find({ question: questionList })
-      .select('-_id -__v -isTrue -avatar')
+    const answers = await Answer.find({ question: curQuestionList })
+      .select('-_id -__v -avatar')
       .sort('answerOrder');
 
     res.status(200).json({
-      exam: exam,
-      skills: skills,
-      parts: parts,
-      mondai: mondai,
-      sentences: sentences,
-      questions: questions,
       answers: answers
     });
   } catch (err) {
@@ -117,6 +91,62 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {});
+//* Refresh question local storage
+router.delete('/answers', (req, res) => {
+  curQuestionList = [];
+  res.status(200).send('Bye curTest !!!');
+  console.log(curQuestionList);
+});
 
 module.exports = router;
+
+// //* Get all exam sentences
+// router.get('/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     //* Get current Exam
+//     const exam = await Exam.findOne({ examNumber: id }).select('-_id');
+
+//     //* Get given skills and parts included
+//     const skills = await Skill.find({})
+//       .select('-_id -__v')
+//       .sort('skillOrder');
+//     const parts = await Part.find({})
+//       .select('-_id -__v')
+//       .sort('partOrder');
+//     //* Get given mondai included
+//     const mondaiList = countMondai(id);
+//     const mondai = await Mondai.find({ mondaiOrder: mondaiList })
+//       .select('-_id -__v -skill -part')
+//       .sort('mondaiOrder');
+
+//     //* Get all Sentences included
+//     const sentences = await Sentence.find({ exam: id })
+//       .select('-exam -_id -__v')
+//       .sort('sentenceOrder');
+//     const sentenceList = sentences.map(item => item.sentenceOrder);
+
+//     //* Get all Questions included
+//     const questions = await Question.find({ sentence: sentenceList })
+//       .select('-_id -__v')
+//       .sort('questionOrder');
+//     const questionList = questions.map(item => item.questionOrder);
+
+//     //* Get all Answers included
+//     const answers = await Answer.find({ question: questionList })
+//       .select('-_id -__v -isTrue -avatar')
+//       .sort('answerOrder');
+
+//     res.status(200).json({
+//       exam: exam,
+//       skills: skills,
+//       parts: parts,
+//       mondai: mondai,
+//       sentences: sentences,
+//       questions: questions,
+//       answers: answers
+//     });
+//   } catch (err) {
+//     res.status(400).send(err.message);
+//   }
+// });
