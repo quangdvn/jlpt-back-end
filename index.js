@@ -11,6 +11,7 @@ const mondais = require('./routes/mondais');
 const sentences = require('./routes/sentences');
 const questions = require('./routes/questions');
 const answers = require('./routes/answers');
+const choukais = require('./routes/choukais')
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.use('/api/exams', exams);
 app.use('/api/skills', skills);
 app.use('/api/parts', parts);
 app.use('/api/mondais', mondais);
+app.use('/api/choukais', choukais)
 app.use('/api/sentences', sentences);
 app.use('/api/questions', questions);
 app.use('/api/answers', answers);
