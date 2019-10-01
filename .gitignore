@@ -4,6 +4,7 @@
 /database
 /extra
 /sources
+/upload
 
 # seeding files
 seed_2.js
