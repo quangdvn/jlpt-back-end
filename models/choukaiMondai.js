@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const choukaiMondaiSchema = new mongoose.Schema(
   {
     choukaiLevel: {
-      type: String,
+      type: Number,
       required: true
     },
     choukaiList: {

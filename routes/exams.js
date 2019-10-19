@@ -27,6 +27,7 @@ router.get('/:id/:skillID', async (req, res) => {
   try {
     const { id, skillID } = req.params;
     //* Get current Exam
+    
     const exam = await Exam.findOne({ examNumber: id }).select('-_id');
 
     //* Get given skills and parts included
