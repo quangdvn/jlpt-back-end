@@ -1,5 +1,5 @@
 const Joi = require('joi');
-Joi.objectID = require('joi-objectid')(Joi);
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const { partSchema } = require('./part');
 const { skillSchema } = require('./skill');
@@ -48,8 +48,8 @@ function validateMondai(mondai) {
   const schema = {
     name: Joi.string().required(),
     description: Joi.string().required(),
-    partID: Joi.objectID().required(),
-    skillID: Joi.objectID().required()
+    partID: Joi.objectId().required(),
+    skillID: Joi.objectId().required()
   };
   return Joi.validate(mondai, schema);
 }

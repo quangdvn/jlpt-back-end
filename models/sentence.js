@@ -1,5 +1,5 @@
-const Joi = require('joi');
-Joi.objectID = require('joi-objectid')(Joi);
+const Joi = require('joi')
+Joi.objectId = require('joi-objectid')(Joi)
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const dbConnection = require('../configs/dbConnect').createLocalConnection;
@@ -60,9 +60,9 @@ const Sentence = mongoose.model('Sentence', sentenceSchema);
 function validateSentence(sentence) {
   const schema = {
     examNumber: Joi.number().required(),
-    partID: Joi.objectID().required(),
-    skillID: Joi.objectID().required(),
-    mondaiID: Joi.objectID().required(),
+    partID: Joi.objectId().required(),
+    skillID: Joi.objectId().required(),
+    mondaiID: Joi.objectId().required(),
     sentenceDetail: Joi.string().allow(null, ''),
     level: Joi.number().required(),
     totalMark: Joi.number().required(),

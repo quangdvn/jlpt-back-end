@@ -1,5 +1,5 @@
 const Joi = require('joi');
-Joi.objectID = require('joi-objectid')(Joi);
+Joi.objectId = require('joi-objectid')(Joi)
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const dbConnection = require('../configs/dbConnect').createLocalConnection;
@@ -43,7 +43,7 @@ const Answer = mongoose.model('Answer', answerSchema);
 
 function validateAnswer(answer) {
   const schema = {
-    questionID: Joi.objectID().required(),
+    questionID: Joi.objectId().required(),
     answerDetail: Joi.string().required(),
     avatar: Joi.string()
       .required()
