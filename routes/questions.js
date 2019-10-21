@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Sentence } = require('../models/sentence');
 const { Question, validate } = require('../models/question');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
-router.get('/', async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
   try {
     const questions = await Question.find();
     res.status(200).json(questions);
@@ -12,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { ChoukaiMondai } = require('../models/choukaiMondai');
 const { ChoukaiSentence } = require('../models/choukaiSentence');
+const auth = require('../middleware/auth');
 
-router.get('/sentences/', async (req, res) => {
+router.get('/sentences/', auth, async (req, res) => {
   try {
     const sentence = await ChoukaiSentence.find({ sentence: { $lte: 15 } });
     res.status(200).json(sentence);
@@ -12,7 +13,7 @@ router.get('/sentences/', async (req, res) => {
   }
 });
 
-router.get('/mondais/', async (req, res) => {
+router.get('/mondais/', auth, async (req, res) => {
   try {
     const mondais = await ChoukaiMondai.find();
     res.status(200).json(mondais);
@@ -21,7 +22,7 @@ router.get('/mondais/', async (req, res) => {
   }
 });
 
-router.get('/mondais/:levelId', async (req, res) => {
+router.get('/mondais/:levelId', auth, async (req, res) => {
   const { levelId } = req.params;
   try {
     const { choukaiList } = await ChoukaiMondai.findOne({

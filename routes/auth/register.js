@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
   if (user) return res.status(400).send('User already registered.');
 
   user = new User(
-    _.pick(req.body, ['username', 'fullname', 'email', 'password'])
+    _.pick(req.body, ['username', 'fullname', 'email', 'password', 'isAdmin'])
   );
   await user.save();
 
@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
   res
     .header('x-auth-token', token)
     .status(200)
-    .send(_.pick(user, ['_id', 'username', 'email']));
+    .send(_.pick(user, ['_id', 'username', 'fullname']));
 });
 
 module.exports = router;

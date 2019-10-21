@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { Sentence } = require('../models/sentence');
-const { Exam } = require('../models/exam');
+const { Exam, validate } = require('../models/exam');
 const { Question } = require('../models/question');
 const { Answer } = require('../models/answer');
 const { Mondai } = require('../models/mondai');
-const { Part } = require('../models/part');
 const { Skill } = require('../models/skill');
 const countMondai = require('../utils/countMondai');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 //* to store current exam questions data
 let curQuestionList = [];
@@ -22,13 +23,60 @@ router.get('/', async (req, res) => {
   }
 });
 
+//* Insert exam data
+router.post('/', [auth, admin], async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let exam = await Exam.findOne({ examNumber: req.body.examNumber });
+  if (exam) return res.status(400).send('Exam already existed !!!');
+
+  try {
+    const {
+      examNumber,
+      examTitle,
+      examLevel,
+      totalMark,
+      examDurationPart1,
+      examDurationPart2
+    } = req.body;
+    exam = new Exam({
+      examNumber,
+      examTitle,
+      examLevel,
+      totalMark,
+      examDurationPart1,
+      examDurationPart2
+    });
+    await exam.save();
+
+    res.status(200).json(exam);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+//* Get 1 exam data
+router.get('/:id/info', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const exam = await Exam.findOne({ examNumber: id }).select('-_id -__v');
+
+    if (!exam) return res.status(400).send('Invalid exam !!!');
+
+    res.status(200).send(exam);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 //* Get exam sentences by skill
-router.get('/:id/:skillID', async (req, res) => {
+router.get('/:id/:skillID', auth, async (req, res) => {
   try {
     const { id, skillID } = req.params;
     //* Get current Exam
-    
-    const exam = await Exam.findOne({ examNumber: id }).select('-_id');
+
+    const exam = await Exam.findOne({ examNumber: id }).select('-_id -__v');
 
     //* Get given skills and parts included
     const curSkill = await Skill.findOne({ skillOrder: skillID }).select(
@@ -95,7 +143,7 @@ router.get('/answers', async (req, res) => {
 //* Refresh question local storage
 router.delete('/answers', (req, res) => {
   curQuestionList = [];
-  res.status(200).send('Bye curTest !!!');
+  res.status(200).json({ done: true });
   console.log(curQuestionList);
 });
 

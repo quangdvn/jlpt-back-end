@@ -3,6 +3,8 @@ const router = express.Router();
 const { Skill } = require('../models/skill');
 const { Part } = require('../models/part');
 const { Mondai, validate } = require('../models/mondai');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 router.get('/', async (req, res) => {
   try {
@@ -13,7 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

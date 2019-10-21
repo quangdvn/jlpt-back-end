@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     fullname: {
       type: String,
       required: true,
-      minlength: 10,
+      minlength: 5,
       maxlength: 50
     },
     email: {
@@ -39,11 +39,15 @@ const userSchema = new mongoose.Schema(
     },
     googleId: {
       type: String,
-      unique: true
+      default: undefined,
+      unique: true,
+      sparse: true
     },
     facebookId: {
       type: String,
-      unique: true
+      default: undefined,
+      unique: true,
+      sparse: true
     },
     password: {
       type: String,
@@ -52,7 +56,8 @@ const userSchema = new mongoose.Schema(
       maxlength: 1024
     },
     avatar: {
-      type: String
+      type: String,
+      default: undefined
     },
     isAdmin: {
       type: Boolean,
@@ -96,7 +101,7 @@ userSchema.methods.comparePassword = function(candidatePassword) {
 const User = mongoose.model('User', userSchema);
 
 function validateNewUser(user) {
-  const schema = {
+  const schema = Joi.object({
     username: Joi.string()
       .min(5)
       .max(50)
@@ -108,20 +113,21 @@ function validateNewUser(user) {
       .email(),
     fullname: Joi.string()
       .trim()
-      .min(10)
+      .min(5)
       .max(50)
       .required(),
     password: Joi.string()
       .min(5)
       .max(255)
       .required(),
-    re_password: Joi.ref('password')
-  };
-  return Joi.validate(user, schema);
+    re_password: Joi.ref('password'),
+    isAdmin: Joi.bool()
+  });
+  return schema.validate(user);
 }
 
 function validateCurUser(user) {
-  const schema = {
+  const schema = Joi.object({
     email: Joi.string()
       .min(5)
       .max(255)
@@ -131,8 +137,8 @@ function validateCurUser(user) {
       .min(5)
       .max(255)
       .required()
-  };
-  return Joi.validate(user, schema);
+  });
+  return schema.validate(user);
 }
 
 exports.User = User;

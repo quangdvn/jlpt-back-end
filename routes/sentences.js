@@ -5,8 +5,10 @@ const { Part } = require('../models/part');
 const { Mondai } = require('../models/mondai');
 const { Exam } = require('../models/exam');
 const { Sentence, validate } = require('../models/sentence');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
-router.get('/', async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
   try {
     const sentences = await Sentence.find();
     res.status(200).json(sentences);
@@ -15,7 +17,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
