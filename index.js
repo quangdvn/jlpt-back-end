@@ -12,19 +12,23 @@ const sentences = require('./routes/sentences');
 const questions = require('./routes/questions');
 const answers = require('./routes/answers');
 const choukais = require('./routes/choukais');
-const registers = require('./routes/auth/register');
-const logins = require('./routes/auth/login');
+const auth = require('./routes/auth/auth');
+const user = require('./routes/auth/user');
+
+const corsOptions = {
+  exposedHeaders: 'x-auth-token'
+};
 
 const app = express();
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger('dev'));
 
 //* API Routes
-app.use('/api/register', registers);
-app.use('/api/login', logins);
+app.use('/api/auth', auth);
+app.use('/api/users', user);
 app.use('/api/exams', exams);
 app.use('/api/skills', skills);
 app.use('/api/parts', parts);
