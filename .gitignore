@@ -10,6 +10,7 @@
 # seeding files
 seed_2.js
 seed.js
+copylink
 
 # dependencies
 /node_modules
