@@ -10,9 +10,6 @@ const countMondai = require('../utils/countMondai');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
-//* to store current exam questions data
-let curQuestionList = [];
-
 //* Get all exam data
 router.get('/', async (req, res) => {
   try {
@@ -103,9 +100,6 @@ router.get('/:id/:skillID', auth, async (req, res) => {
       .sort('questionOrder');
     const questionList = questions.map(item => item.questionOrder);
 
-    //* Temporary store questions list into a carbon copy
-    curQuestionList = [...curQuestionList, ...questionList];
-
     //* Get all Answers included
     const answers = await Answer.find({ question: questionList })
       .select('-_id -__v -isTrue -avatar')
@@ -125,10 +119,16 @@ router.get('/:id/:skillID', auth, async (req, res) => {
 });
 
 //* Get sentences answers
-router.get('/answers', async (req, res) => {
+router.get('/answers/:id', auth, async (req, res) => {
   try {
+    //* Get all Sentences included
+    const { sentenceOrder } = await Sentence.find({ exam: req.params.id });
+
+    //* Get all Questions included
+    const { questionOrder } = await Question.find({ sentence: sentenceOrder });
+
     //* Get all Answers included
-    const answers = await Answer.find({ question: curQuestionList })
+    const answers = await Answer.find({ question: questionOrder })
       .select('-_id -__v -avatar')
       .sort('answerOrder');
 
@@ -138,13 +138,6 @@ router.get('/answers', async (req, res) => {
   } catch (err) {
     res.status(400).send(err.message);
   }
-});
-
-//* Refresh question local storage
-router.delete('/answers', (req, res) => {
-  curQuestionList = [];
-  res.status(200).json({ done: true });
-  console.log(curQuestionList);
 });
 
 module.exports = router;

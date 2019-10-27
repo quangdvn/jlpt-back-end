@@ -20,9 +20,6 @@ const answerSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    avatar: {
-      type: String
-    },
     isTrue: {
       type: Boolean,
       default: false
@@ -45,9 +42,6 @@ function validateAnswer(answer) {
   const schema = Joi.object({
     questionID: Joi.objectId().required(),
     answerDetail: Joi.string().required(),
-    avatar: Joi.string()
-      .required()
-      .allow(null, ''),
     isTrue: Joi.boolean()
   });
   return schema.validate(answer);
