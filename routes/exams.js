@@ -118,28 +118,6 @@ router.get('/:id/:skillID', auth, async (req, res) => {
   }
 });
 
-//* Get sentences answers
-router.get('/answers/:id', auth, async (req, res) => {
-  try {
-    //* Get all Sentences included
-    const { sentenceOrder } = await Sentence.find({ exam: req.params.id });
-
-    //* Get all Questions included
-    const { questionOrder } = await Question.find({ sentence: sentenceOrder });
-
-    //* Get all Answers included
-    const answers = await Answer.find({ question: questionOrder })
-      .select('-_id -__v -avatar')
-      .sort('answerOrder');
-
-    res.status(200).json({
-      answers: answers
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
 module.exports = router;
 
 // //* Get all exam sentences
