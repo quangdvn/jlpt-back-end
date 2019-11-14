@@ -5,9 +5,9 @@ require("dotenv").config();
 
 const redirectUrl = () => {
   if (process.env.NODE_ENV === "production") {
-    return process.env.PRODUCT_GOOGLE_REDIRECT;
+    return process.env.PRODUCT_GOOGLE_CALLBACK;
   } else {
-    return process.env.DEV_GOOGLE_REDIRECT;
+    return process.env.DEV_GOOGLE_CALLBACK;
   }
 };
 
