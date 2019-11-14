@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
       minlength: 5,
       maxlength: 50,
       unique: true,
@@ -59,8 +58,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
-      minlength: 5,
+      default: '',
       maxlength: 1024
     },
     avatar: {
@@ -112,6 +110,7 @@ function validateNewUser(user) {
   const schema = Joi.object({
     username: Joi.string()
       .trim()
+      .regex(/^\S+$/)
       .min(5)
       .max(50)
       .required(),

@@ -9,6 +9,7 @@ const express = require('express');
 const _ = require('lodash');
 const router = express.Router();
 const auth = require('../../middleware/auth');
+const passport = require('passport');
 
 //* New User Register
 router.post('/register', async (req, res) => {
@@ -20,20 +21,23 @@ router.post('/register', async (req, res) => {
     if (password !== re_password)
       return res.status(400).send('Password mis-match.');
 
-    let user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).send('User already registered.');
+    const userEmail = await User.findOne({ email: req.body.email });
+    if (userEmail) return res.status(400).send('User already registered.');
 
-    user = new User(
+    const userUserName = await User.findOne({ username: req.body.username });
+    if (userUserName) return res.status(400).send('Username already existed.');
+
+    let newUser = new User(
       _.pick(req.body, ['username', 'fullname', 'email', 'password', 'isAdmin'])
     );
-    await user.save();
+    await newUser.save();
 
-    const token = user.generateAuthToken();
+    const token = newUser.generateAuthToken();
 
     res
       .header('x-auth-token', token)
       .status(200)
-      .send(_.pick(user, ['_id', 'username', 'fullname']));
+      .send(_.pick(newUser, ['_id', 'username', 'fullname']));
   } catch (err) {
     return res.status(400).send(err.message);
   }

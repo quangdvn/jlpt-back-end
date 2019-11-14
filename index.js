@@ -1,22 +1,25 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const logger = require('morgan');
-const databaseConnection = require('./configs/dbConnect').databaseConnection;
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const logger = require("morgan");
+const passport = require("passport");
+const databaseConnection = require("./configs/dbConnect").databaseConnection;
+require("./middleware/passport");
 
-const exams = require('./routes/exams');
-const skills = require('./routes/skills');
-const parts = require('./routes/parts');
-const mondais = require('./routes/mondais');
-const sentences = require('./routes/sentences');
-const questions = require('./routes/questions');
-const answers = require('./routes/answers');
-const choukais = require('./routes/choukais');
-const auth = require('./routes/auth/auth');
-const user = require('./routes/auth/user');
+const exams = require("./routes/exams");
+const skills = require("./routes/skills");
+const parts = require("./routes/parts");
+const mondais = require("./routes/mondais");
+const sentences = require("./routes/sentences");
+const questions = require("./routes/questions");
+const answers = require("./routes/answers");
+const choukais = require("./routes/choukais");
+const auth = require("./routes/auth/auth")
+const user = require("./routes/auth/user");
+const googleLogin = require("./routes/auth/googleLogIn");
 
 const corsOptions = {
-  exposedHeaders: 'x-auth-token'
+  exposedHeaders: "x-auth-token"
 };
 
 const app = express();
@@ -24,19 +27,21 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(logger('dev'));
+app.use(logger("dev"));
+app.use(passport.initialize());
 
 //* API Routes
-app.use('/api/auth', auth);
-app.use('/api/users', user);
-app.use('/api/exams', exams);
-app.use('/api/skills', skills);
-app.use('/api/parts', parts);
-app.use('/api/mondais', mondais);
-app.use('/api/choukais', choukais);
-app.use('/api/sentences', sentences);
-app.use('/api/questions', questions);
-app.use('/api/answers', answers);
+app.use("/auth", googleLogin);
+app.use("/api/auth", auth);
+app.use("/api/users", user);
+app.use("/api/exams", exams);
+app.use("/api/skills", skills);
+app.use("/api/parts", parts);
+app.use("/api/mondais", mondais);
+app.use("/api/choukais", choukais);
+app.use("/api/sentences", sentences);
+app.use("/api/questions", questions);
+app.use("/api/answers", answers);
 
 databaseConnection();
 const port = process.env.PORT || 8888;
