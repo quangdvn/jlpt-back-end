@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
+      default: undefined,
       minlength: 5,
       maxlength: 50,
       unique: true,

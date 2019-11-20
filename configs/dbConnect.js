@@ -7,10 +7,13 @@ module.exports = {
       .connect(mongoDB, {
         useNewUrlParser: true,
         useCreateIndex: true,
-        useFindAndModify: false
+        useFindAndModify: false,
+        useUnifiedTopology: true
       })
       .then(() => console.log('Connected to MongoDB...'))
-      .catch(err => console.error('Could not connect to MongoDB...', err.message));
+      .catch(err =>
+        console.error('Could not connect to MongoDB...', err.message)
+      );
   },
   createLocalConnection: mongoose.createConnection(mongoDB, {
     useNewUrlParser: true,
